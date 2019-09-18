@@ -1,0 +1,59 @@
+version: '2.1'
+
+services:
+
+  influxdb:
+    image: influxdb:latest
+    restart: unless-stopped    
+    container_name: influxdb
+    # ports:
+    #   - "8086:8086"
+    env_file:
+      - 'env.influxdb'
+    volumes:
+      # Data persistency
+      # sudo mkdir -p data
+      - ./data/influxdb:/var/lib/influxdb
+    networks:
+      - influxnet
+
+  grafana:
+    image: grafana/grafana:latest
+    restart: unless-stopped    
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    env_file:
+      - 'env.grafana'
+    volumes:
+      # Data persistency
+      # mkdir -p data/grafana; chown 472:472 data/grafana
+      - ./data/grafana:/var/lib/grafana
+    networks:
+      - influxnet
+
+
+  logstash:
+    image: logstash:7.0.1
+    restart: unless-stopped    
+    container_name: logstash
+    build:
+      dockerfile: logstash.Dockerfile
+      context: .
+      args:
+        ELK_VERSION: 7.0.1
+    volumes:
+      - ./logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./pipeline:/usr/share/logstash/pipeline:ro
+    ports:
+      #- "9600:9600"      # Logstash API endpoint
+      - "12345:12345/udp" # syslog in
+      - "12346:12346/udp" # syslog in
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+    networks:
+      - influxnet      
+
+networks:
+  influxnet:
+    name: influxdb
