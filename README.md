@@ -1,4 +1,4 @@
-# Headline
+# Basic InfluxDB + Grafana Installation
 
 ## Setup
 
