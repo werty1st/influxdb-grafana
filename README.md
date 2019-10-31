@@ -85,3 +85,29 @@ Access the Dasboard: http://localhost:3000
 
 * Login: admin
 * Password: admin
+
+
+
+
+## DEV/DEBUG
+
+```sql
+> use syslog
+Using database syslog
+> show measurements
+name: measurements
+name
+----
+average_response_1h
+logstash
+p95_30m
+p95_5m
+> delete FROM "logstash" WHERE time <= '2019-07-03T12:00:00.000Z'
+
+delete FROM "logstash" WHERE "engine" = 'trending_new'
+delete FROM "logstash" WHERE "engine" = 'ts1'
+delete FROM "logstash" WHERE "engine" = '%{engine}'
+
+DROP SERIES FROM "logstash" WHERE "engine" = '%{engine}'
+
+```
